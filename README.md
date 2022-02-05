@@ -1,4 +1,4 @@
-# Recommend_Univ
+# レビューによる大学学部推薦システム
 https://share.streamlit.io/yamataro-46/recommend_univ/recommend_univ.py
 
 
