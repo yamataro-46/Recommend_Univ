@@ -4,6 +4,8 @@
 # import, リスト・辞書の定義
 from janome.tokenizer import Tokenizer
 from gensim import models
+import streamlit as st
+import time
 
 
 # ファイルの読み込み
@@ -74,10 +76,31 @@ def output_similar_univ(input_text, model, n):
 
 
 
-# 出力
-input_text = input('大学学部を選ぶ上での条件：')
 
-print('「', input_text, '」 という条件に近い大学学部')
-ans = output_similar_univ(input_text, wakati_model, 5)
-for i in range(len(ans)):
-    print('第' + str(i+1) + '位：' + ans[i][0] + '  類似度：' + str(round(float(ans[i][1])*100, 2)) + ' %')
+# webアプリとして公開
+st.title('あなたに合った大学学部を見つけよう!')
+
+'あなたがどんな大学に通いたいか、どんな大学生活を送りたいか 希望を書いてみましょう。'
+'きっとあなたに合う大学学部を教えてくれますよ'
+
+
+input_text = st.text_input('大学学部を選ぶ上での条件')
+
+
+if input_text != '':
+    latest_iteration = st.empty()
+    bar = st.progress(0)
+    for i in range(100):
+        latest_iteration.text(f'検索中... {i+1}')
+        bar.progress(i+1)
+        time.sleep(0.05)
+
+    '「', input_text, '」 という条件に近い大学学部はこちら'
+    ans = output_similar_univ(input_text, wakati_model, 30)
+    # 上位5位を表示
+    for i in range(5):
+        '第' , i+1, '位：', ans[i][0], '　条件一致度：', round(float(ans[i][1])*100, 2), '%'
+    expander = st.expander('6位以降はこちらから')
+    for i in range(5, len(ans)):
+        ex = '第' + str(i+1) + '位：' + ans[i][0] + '　条件一致度：' + str(round(float(ans[i][1])*100, 2)) + '%'
+        expander.write(ex)
